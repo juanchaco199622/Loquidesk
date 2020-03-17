@@ -224,7 +224,7 @@ class NuevoCaso extends Component {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <Select fullWidth onChange={this.entraDatosEnEstado} >
+              <Select fullWidth onChange={this.entraDatosEnEstado} value={this.state.nuevoCaso.puntoVenta} name='puntoVenta' >
                 {this.state.arregloPuntoVenta.map(info=>(
                   <MenuItem key={info.nombre} value={info.nombre}>
                     {info.nombre}
