@@ -14,7 +14,9 @@ import {
   Table,
   TableBody,
   TableRow,
-  TableCell
+  TableCell,
+  Select,
+  MenuItem
 } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
 import ImageUploader from "react-images-upload";
@@ -61,7 +63,8 @@ class EditarCaso extends Component {
       estado: "",
       prioridad: "",
       fotos: []
-    }
+    },
+    arregloPuntoVenta: []
   };
 
   cambiarDato = e => {
@@ -106,7 +109,6 @@ class EditarCaso extends Component {
         });
     });
   };
-  
 
   eliminarFoto = fotoUrl => async () => {
     console.log(fotoUrl);
@@ -134,10 +136,18 @@ class EditarCaso extends Component {
       });
   };
 
-
-  
   /* Funciona cuando se carga la pagina */
   async componentDidMount() {
+    let objectQuery = this.props.firebase.db.collection("PuntosVenta");
+
+    const snapshot = await objectQuery.get();
+
+    const arrayPuntos = snapshot.docs.map(doc => {
+      let data = doc.data();
+      let id = doc.id;
+      return { id, ...data };
+    });
+
     /* Capturar el codigo de la url */
     const { id } = this.props.match.params;
     /* Objecto firebase */
@@ -146,40 +156,36 @@ class EditarCaso extends Component {
     const casoDB = await casoCollection.doc(id).get();
     /*Actualizar todos los componentes de mi vista */
     this.setState({
-      caso: casoDB.data()
+      caso: casoDB.data(),
+      arregloPuntoVenta: arrayPuntos
     });
   }
 
-  guardarCaso = () =>{
+  guardarCaso = () => {
+    const { caso } = this.state;
+    const { id } = this.props.match.params;
 
-    const {caso} = this.state;
-    const {id} = this.props.match.params;
-
-    const textoBusqueda = caso.titulo + " " + caso.descripcion + " " + caso.prioridad;
+    const textoBusqueda =
+      caso.titulo + " " + caso.descripcion + " " + caso.prioridad;
     const keywords = crearKeyword(textoBusqueda);
 
     caso.keywords = keywords;
 
     this.props.firebase.db
-    .collection("Casos")
-    .doc(id)
-    .set(caso, { merge: true})
-    .then(success =>{
-      this.props.history.push("/")
-    })
-
-
-  }
-
+      .collection("Casos")
+      .doc(id)
+      .set(caso, { merge: true })
+      .then(success => {
+        this.props.history.push("/");
+      });
+  };
 
   render() {
     let uniqueID = uuid.v4;
     return (
       <Container style={style.container}>
         <Paper style={style.paper}>
-
           <Grid container spacing={3}>
-
             <Grid item xs={12} md={12}>
               <Breadcrumbs arial-label="breadcrumb">
                 <Link color="inherit" style={style.link} href="/">
@@ -222,13 +228,18 @@ class EditarCaso extends Component {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <TextField
+              <Select
                 name="puntoVenta"
-                label="Punto de Venta"
                 fullWidth
                 onChange={this.cambiarDato}
                 value={this.state.caso.puntoVenta}
-              />
+              >
+                {this.state.arregloPuntoVenta.map(info=>(
+                  <MenuItem key={info.id} value={info.nombre}>
+                  {info.nombre}
+                  </MenuItem>
+                ))}
+              </Select>
             </Grid>
 
             <Grid item xs={12} md={6}>
