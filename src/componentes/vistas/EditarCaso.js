@@ -50,6 +50,14 @@ const style = {
   },
   fotoCaso: {
     height: "100px"
+  },
+  paper2: {
+    marginTop: 8,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    padding: "20px",
+    backgroundColor: "#f5f5f5"
   }
 };
 
@@ -185,7 +193,7 @@ class EditarCaso extends Component {
     return (
       <Container style={style.container}>
         <Paper style={style.paper}>
-          <Grid container spacing={3}>
+          <Grid container>
             <Grid item xs={12} md={12}>
               <Breadcrumbs arial-label="breadcrumb">
                 <Link color="inherit" style={style.link} href="/">
@@ -195,7 +203,10 @@ class EditarCaso extends Component {
                 <Typography color="textPrimary">Editar Caso</Typography>
               </Breadcrumbs>
             </Grid>
-
+          </Grid>
+        </Paper>
+        <Paper style={style.paper2}>
+          <Grid container spacing={3}>
             <Grid item xs={12} md={4}>
               <TextField
                 name="estado"
@@ -206,8 +217,6 @@ class EditarCaso extends Component {
                 value={this.state.caso.estado}
               />
             </Grid>
-
-            <Grid item xs={12} md={4}></Grid>
 
             <Grid item xs={12} md={4}>
               <InputLabel fullWidth htmlFor="demo-customized-select-native">
@@ -227,16 +236,18 @@ class EditarCaso extends Component {
               </NativeSelect>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
+              <InputLabel htmlFor="name-native">Puntos de venta</InputLabel>
+
               <Select
                 name="puntoVenta"
                 fullWidth
                 onChange={this.cambiarDato}
                 value={this.state.caso.puntoVenta}
               >
-                {this.state.arregloPuntoVenta.map(info=>(
+                {this.state.arregloPuntoVenta.map(info => (
                   <MenuItem key={info.id} value={info.nombre}>
-                  {info.nombre}
+                    {info.nombre}
                   </MenuItem>
                 ))}
               </Select>
@@ -263,59 +274,59 @@ class EditarCaso extends Component {
                 value={this.state.caso.descripcion}
               />
             </Grid>
-          </Grid>
 
-          <Grid container justify="center">
-            <Grid item xs={12} md={12} sm={6}>
-              <ImageUploader
-                key={uniqueID}
-                widthIcon={true}
-                buttonText="Seleccionar Imagenes"
-                onChange={this.subirImagenes}
-                imgExtension={[".jpg", ".gif", ".png", ".jpeg"]}
-              />
+            <Grid container justify="center">
+              <Grid item xs={12} md={12} sm={6}>
+                <ImageUploader
+                  key={uniqueID}
+                  widthIcon={true}
+                  buttonText="Seleccionar Imagenes"
+                  onChange={this.subirImagenes}
+                  imgExtension={[".jpg", ".gif", ".png", ".jpeg"]}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <Table>
+                  <TableBody>
+                    {this.state.caso.fotos
+                      ? this.state.caso.fotos.map((foto, i) => (
+                          <TableRow key={i}>
+                            <TableCell align="left">
+                              <img src={foto} style={style.fotoCaso} />
+                            </TableCell>
+                            <TableCell align="left">
+                              <Button
+                                variant="contained"
+                                color="secondary"
+                                size="small"
+                                onClick={this.eliminarFoto(foto)}
+                              >
+                                Eliminar
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      : ""}
+                  </TableBody>
+                </Table>
+              </Grid>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <Table>
-                <TableBody>
-                  {this.state.caso.fotos
-                    ? this.state.caso.fotos.map((foto, i) => (
-                        <TableRow key={i}>
-                          <TableCell align="left">
-                            <img src={foto} style={style.fotoCaso} />
-                          </TableCell>
-                          <TableCell align="left">
-                            <Button
-                              variant="contained"
-                              color="secondary"
-                              size="small"
-                              onClick={this.eliminarFoto(foto)}
-                            >
-                              Eliminar
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    : ""}
-                </TableBody>
-              </Table>
-            </Grid>
-          </Grid>
-
-          <Grid container justify="center">
-            <Grid item xs={12} sm={6}>
-              <Button
-                type="button"
-                fullWidth
-                variant="contained"
-                size="large"
-                color="primary"
-                style={style.submit}
-                onClick={this.guardarCaso}
-              >
-                Guardar
-              </Button>
+            <Grid container justify="center">
+              <Grid item xs={12} sm={6}>
+                <Button
+                  type="button"
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  color="primary"
+                  style={style.submit}
+                  onClick={this.guardarCaso}
+                >
+                  Guardar
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
         </Paper>

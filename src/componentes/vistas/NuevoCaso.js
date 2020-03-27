@@ -15,8 +15,7 @@ import {
   InputLabel,
   NativeSelect,
   Select,
-  MenuItem,
-  FormControl
+  MenuItem
 } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
 import { consumerFirebase } from "../../server";
@@ -223,7 +222,9 @@ class NuevoCaso extends Component {
               </NativeSelect>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
+            <InputLabel htmlFor="name-native">Puntos de venta</InputLabel>
+
               <Select fullWidth onChange={this.entraDatosEnEstado} value={this.state.nuevoCaso.puntoVenta} name='puntoVenta' >
                 {this.state.arregloPuntoVenta.map(info=>(
                   <MenuItem key={info.nombre} value={info.nombre}>

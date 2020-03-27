@@ -20,9 +20,9 @@ import logo from "../../logo.svg";
 import { withStyles } from "@material-ui/core/styles";
 import BorderColor from "@material-ui/icons/BorderColor";
 import DeleteIcon from "@material-ui/icons/Delete";
-import ArrowLeft from '@material-ui/icons/ArrowLeft';
-import ArrowRight from '@material-ui/icons/ArrowRight';
-
+import ArrowLeft from "@material-ui/icons/ArrowLeft";
+import ArrowRight from "@material-ui/icons/ArrowRight";
+import { obtenerData } from "../../sesion/actions/CasosAction";
 
 const style = {
   cardGrid: {
@@ -54,13 +54,20 @@ const style = {
   containerButton: {
     margin: "10px",
     justifyContent: "center"
+  },
+  barraBoton: {
+    marginTop: "20px"
   }
 };
 
 class ListaCasos extends Component {
   state = {
     casos: [],
-    textoBusqueda: ""
+    textoBusqueda: "",
+    paginas: [],
+    paginasSize: 25,
+    casoInicial: null,
+    paginaActual : 0
   };
 
   cambiarBusquedaTexto = e => {
@@ -101,20 +108,26 @@ class ListaCasos extends Component {
   };
 
   async componentDidMount() {
-    let objectQuery = this.props.firebase.db
-      .collection("Casos")
-      .orderBy("puntoVenta");
-    const snapshot = await objectQuery.get();
-
-    const arrayCasos = snapshot.docs.map(doc => {
-      let data = doc.data();
-      let id = doc.id;
-      return { id, ...data };
-    });
+    const { paginasSize, textoBusqueda, casoInicial, paginas } = this.state;
+    const firebase = this.props.firebase;
+    const firebaseReturnData = await obtenerData(
+      firebase,
+      paginasSize,
+      casoInicial,
+      textoBusqueda
+    );  
+    const pagina = {
+      inicialValor : firebaseReturnData.inicialValor,
+      finalValor : firebaseReturnData.finalValor
+    }
+    paginas.push(pagina);
 
     this.setState({
-      casos: arrayCasos
-    });
+      casos: firebaseReturnData.arrayCasos2,
+      paginas,
+      paginaActual: 0
+    })
+
   }
 
   eliminarCaso = id => {
@@ -137,9 +150,9 @@ class ListaCasos extends Component {
   editarCaso = id => {
     this.props.history.push("/lista/" + id);
   };
-  asignarCaso = id =>{
-    this.props.history.push("/caso/asignarcaso/"+ id );
-  }
+  asignarCaso = id => {
+    this.props.history.push("/caso/asignarcaso/" + id);
+  };
 
   render() {
     return (
@@ -169,16 +182,21 @@ class ListaCasos extends Component {
           </Grid>
 
           <Grid item xs={12} sm={12} style={style.barraBoton}>
-              <Grid container spacing={1} direction="column" alignItems='flex-end' >
-                <ButtonGroup size='small' arial-label="small outlined group">
-                  <Button>
-                    <ArrowLeft/>
-                  </Button>
-                  <Button>
-                    <ArrowRight/>
-                  </Button>
-                </ButtonGroup>
-              </Grid>
+            <Grid
+              container
+              spacing={1}
+              direction="column"
+              alignItems="flex-end"
+            >
+              <ButtonGroup size="small" arial-label="small outlined group">
+                <Button>
+                  <ArrowLeft />
+                </Button>
+                <Button>
+                  <ArrowRight />
+                </Button>
+              </ButtonGroup>
+            </Grid>
           </Grid>
 
           <Grid item xs={12} sm={12} style={style.gridTextfield}>
@@ -219,7 +237,7 @@ class ListaCasos extends Component {
                       </Button>
                     </Grid>
 
-                    <CardActions spacing={2} alingItem = 'center' >
+                    <CardActions spacing={2} alingItem="center">
                       <Button
                         item
                         size="small"
