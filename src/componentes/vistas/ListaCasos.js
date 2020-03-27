@@ -65,7 +65,7 @@ class ListaCasos extends Component {
     casos: [],
     textoBusqueda: "",
     paginas: [],
-    paginasSize: 1,
+    paginasSize: 6,
     casoInicial: null,
     paginaActual: 0
   };
