@@ -22,7 +22,7 @@ import BorderColor from "@material-ui/icons/BorderColor";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ArrowLeft from "@material-ui/icons/ArrowLeft";
 import ArrowRight from "@material-ui/icons/ArrowRight";
-import { obtenerData } from "../../sesion/actions/CasosAction";
+import { obtenerData, obtenerDataAnterior } from "../../sesion/actions/CasosAction";
 
 const style = {
   cardGrid: {
@@ -65,9 +65,9 @@ class ListaCasos extends Component {
     casos: [],
     textoBusqueda: "",
     paginas: [],
-    paginasSize: 25,
+    paginasSize: 1,
     casoInicial: null,
-    paginaActual : 0
+    paginaActual: 0
   };
 
   cambiarBusquedaTexto = e => {
@@ -107,6 +107,56 @@ class ListaCasos extends Component {
     });
   };
 
+anteriorPagina = () =>{
+  const {paginaActual, paginasSize, textoBusqueda, paginas}= this.state;
+
+  if(paginaActual > 0){
+    const firebase = this.props.firebase;
+    obtenerDataAnterior(firebase, paginasSize, paginas[paginaActual - 1].inicialValor, textoBusqueda).then(firebaseReturnData =>{
+      const pagina={
+        inicialValor: firebaseReturnData.inicialValor,
+        finalValor : firebaseReturnData.finalValor
+      }
+      paginas.push(pagina);
+
+      this.setState({
+        paginas,
+        paginaActual: paginaActual - 1,
+        casos : firebaseReturnData.arrayCasos2
+      })
+    })
+  }
+
+}
+
+  siguientePagina = () => {
+    const {
+      paginaActual,
+      paginasSize,
+      textoBusqueda,
+      paginas,
+      casoInicial
+    } = this.state;
+    const firebase = this.props.firebase;
+
+    obtenerData(firebase, paginasSize,paginas[paginaActual].finalValor,textoBusqueda).then(firebaseReturnData => {
+
+      if (firebaseReturnData.arrayCasos2.length > 0) {
+        const pagina = {
+          inicialValor: firebaseReturnData.inicialValor,
+          finalValor: firebaseReturnData.finalValor
+        };
+        paginas.push(pagina);
+
+        this.setState({
+          paginas,
+          paginaActual: paginaActual + 1,
+          casos: firebaseReturnData.arrayCasos2
+        });
+      }
+    });
+  };
+
   async componentDidMount() {
     const { paginasSize, textoBusqueda, casoInicial, paginas } = this.state;
     const firebase = this.props.firebase;
@@ -115,19 +165,18 @@ class ListaCasos extends Component {
       paginasSize,
       casoInicial,
       textoBusqueda
-    );  
+    );
     const pagina = {
-      inicialValor : firebaseReturnData.inicialValor,
-      finalValor : firebaseReturnData.finalValor
-    }
+      inicialValor: firebaseReturnData.inicialValor,
+      finalValor: firebaseReturnData.finalValor
+    };
     paginas.push(pagina);
 
     this.setState({
       casos: firebaseReturnData.arrayCasos2,
       paginas,
       paginaActual: 0
-    })
-
+    });
   }
 
   eliminarCaso = id => {
@@ -189,10 +238,10 @@ class ListaCasos extends Component {
               alignItems="flex-end"
             >
               <ButtonGroup size="small" arial-label="small outlined group">
-                <Button>
+                <Button onClick={this.anteriorPagina}>
                   <ArrowLeft />
                 </Button>
-                <Button>
+                <Button onClick={this.siguientePagina}>
                   <ArrowRight />
                 </Button>
               </ButtonGroup>
