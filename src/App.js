@@ -34,7 +34,7 @@ function App(props) {
       setupFirebaseInicial(val);
     });
   });
-// VALIDADO 
+
 
   return autenticacionIniciada !== false ? (
     <React.Fragment>

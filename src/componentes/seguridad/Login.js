@@ -5,7 +5,8 @@ import {
   Typography,
   TextField,
   Button,
-  Link
+  Link,
+  Grid
 } from "@material-ui/core";
 import LockoutLineIcon from "@material-ui/icons/LockOutlined";
 import { compose } from "recompose";
@@ -13,6 +14,8 @@ import { consumerFirebase } from "../../server";
 import { iniciarSesion } from "../../sesion/actions/sesionAction"; // video 44
 import { StateContext } from "../../sesion/store"; // video 44
 import { openMensajePantalla } from "../../sesion/actions/snackbarAction"; // video 45
+import { red } from "@material-ui/core/colors";
+import { withStyles } from "@material-ui/core/styles";
 //import logo from "../../logosonrisa.png";
 
 const style = {
@@ -30,8 +33,12 @@ const style = {
     width: "100%",
     marginTop: 8
   },
-  text : {
-    marginTop : '50px'
+  text: {
+    marginTop: "50px"
+  },
+  submit: {
+    marginTop: 20,
+    marginBotton: 20
   }
 };
 
@@ -79,8 +86,27 @@ class Login extends Component {
       openMensajePantalla(dispatch, {
         open: true,
         mensaje: callback.mensaje.message
-      });// adicionado video 45 
+      }); // adicionado video 45
     }
+  };
+
+  resetearPassword = () => {
+    const { firebase, usuario } = this.state;
+    const [{ sesion }, dispatch] = this.context;
+    firebase.auth
+      .sendPasswordResetEmail(usuario.email)
+      .then(success => {
+        openMensajePantalla(dispatch, {
+          open: true,
+          mensaje: "Se ha enviado un correo Electronico a tu cuenta."
+        });
+      })
+      .catch(error => {
+        openMensajePantalla(dispatch, {
+          open: true,
+          mensaje: error.message
+        });
+      });
   };
 
   render() {
@@ -120,10 +146,35 @@ class Login extends Component {
               variant="contained"
               color="primary"
               onClick={this.login}
+              style={style.submit}
             >
               Ingresar
             </Button>
+            <Grid container align="center">
+              <Grid item xs>
+                <Link href="#" onClick={this.resetearPassword} className={this.props.classes.link1}>
+                  {"Olvido su contraseña ?  "}
+                </Link>
+              </Grid>
+              <Grid item xs>
+                <Link
+                  href="/auth/registrarUsuario"
+                  className={this.props.classes.link2}
+                >
+                  {"No tienes cuenta? Registrate."}
+                </Link>
+              </Grid>
+            </Grid>
           </form>
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            style={style.submit}
+            href="#"
+          >
+            Ingrese con su Telefono
+          </Button>
         </div>
         <Typography style={style.text} variant="body2" align="center">
           {"Copyright © "}
@@ -138,4 +189,11 @@ class Login extends Component {
   }
 }
 
-export default compose(consumerFirebase)(Login);
+export default withStyles({
+  link1: {
+    color: "red"
+  },
+  link2: {
+    color: "#02c59b"
+  }
+})(compose(consumerFirebase)(Login));
