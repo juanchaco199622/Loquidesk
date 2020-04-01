@@ -19,6 +19,7 @@ import NuevoPunto from "./componentes/vistas/NuevoPunto";
 import ListaCasos from "./componentes/vistas/ListaCasos";
 import EditarCaso from "./componentes/vistas/EditarCaso";
 import AsignarCaso from "./componentes/vistas/AsignarCaso";
+import LoginTelefono from "./componentes/seguridad/LoginTelefono";
 
 
 
@@ -80,6 +81,7 @@ function App(props) {
                   component={RegistrarUsuario}
                 ></Route>
               <Route path="/auth/login" exact component={Login}/>
+              <Route path="/auth/loginTelefono" exact component={LoginTelefono}/>
             </Switch>
           </Grid>
         </MuiThemeProvider>

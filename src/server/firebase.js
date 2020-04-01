@@ -20,6 +20,7 @@ class Firebase {
         this.db = app.firestore();
         this.auth = app.auth(); //VALIDADO
         this.storage = app.storage();
+        this.authorization = app.auth;
 
         this.storage.ref().constructor.prototype.guardarDocumento = function(documentos){
             var ref=this;
